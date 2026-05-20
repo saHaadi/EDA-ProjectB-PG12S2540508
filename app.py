@@ -491,14 +491,24 @@ with tabs[0]:
 
     # Column audit
     st.markdown('<div class="section-header">Column Audit</div>', unsafe_allow_html=True)
+
+    def _safe_stat(col, stat):
+        """Return numeric stat rounded to 2dp, or '—' for non-numeric/datetime columns."""
+        if pd.api.types.is_numeric_dtype(col):
+            try:
+                return round(float(getattr(col, stat)()), 2)
+            except Exception:
+                return "—"
+        return "—"
+
     audit = pd.DataFrame({
-        "Column": df_raw.columns,
-        "Dtype": [str(df_raw[c].dtype) for c in df_raw.columns],
-        "Non-Null": [df_raw[c].notna().sum() for c in df_raw.columns],
-        "Missing %": [round(df_raw[c].isna().mean()*100,2) for c in df_raw.columns],
-        "Min": [round(df_raw[c].min(),2) if df_raw[c].dtype != object else "—" for c in df_raw.columns],
-        "Max": [round(df_raw[c].max(),2) if df_raw[c].dtype != object else "—" for c in df_raw.columns],
-        "Mean": [round(df_raw[c].mean(),2) if df_raw[c].dtype != object else "—" for c in df_raw.columns],
+        "Column":    list(df_raw.columns),
+        "Dtype":     [str(df_raw[c].dtype) for c in df_raw.columns],
+        "Non-Null":  [int(df_raw[c].notna().sum()) for c in df_raw.columns],
+        "Missing %": [round(df_raw[c].isna().mean()*100, 2) for c in df_raw.columns],
+        "Min":       [_safe_stat(df_raw[c], "min")  for c in df_raw.columns],
+        "Max":       [_safe_stat(df_raw[c], "max")  for c in df_raw.columns],
+        "Mean":      [_safe_stat(df_raw[c], "mean") for c in df_raw.columns],
     })
     st.dataframe(audit, use_container_width=True)
 
