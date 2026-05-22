@@ -776,8 +776,8 @@ with tabs[2]:
         sc=StandardScaler(); Xtr_s=sc.fit_transform(Xtr); Xte_s=sc.transform(Xte)
         res={}
         r=Ridge(alpha=10); r.fit(Xtr_s,ytr); pr=r.predict(Xte_s)
-        rf=RandomForestRegressor(120,max_depth=12,n_jobs=-1,random_state=42); rf.fit(Xtr,ytr); prf=rf.predict(Xte)
-        gb=GradientBoostingRegressor(150,learning_rate=0.08,max_depth=5,random_state=42); gb.fit(Xtr,ytr); pgb=gb.predict(Xte)
+        rf=RandomForestRegressor(n_estimators=120,max_depth=12,n_jobs=-1,random_state=42); rf.fit(Xtr,ytr); prf=rf.predict(Xte)
+        gb=GradientBoostingRegressor(n_estimators=150,learning_rate=0.08,max_depth=5,random_state=42); gb.fit(Xtr,ytr); pgb=gb.predict(Xte)
         for nm,pp in [("Ridge Regression",pr),("Random Forest",prf),("Gradient Boosting",pgb)]:
             mae=mean_absolute_error(yte,pp); rmse=np.sqrt(mean_squared_error(yte,pp))
             mape=np.mean(np.abs((yte-pp)/yte))*100; r2=1-np.sum((yte-pp)**2)/np.sum((yte-yte.mean())**2)
